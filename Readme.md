@@ -1,4 +1,7 @@
-# nvim_training
+# nvim_stats
+
+Currently in development, none of this is supposed to work, 
+hang tight :)
 
 [![License: GPL](https://img.shields.io/badge/License-GPL-brightgreen.svg)](https://opensource.org/license/gpl-3-0/)
 
