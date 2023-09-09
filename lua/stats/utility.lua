@@ -2,76 +2,8 @@
 
 local utility = {}
 
-local LinkedListNode = require("nvim_training.linked_list")
---This module deviates from the oop paradigm, it is just a collection of methods without internal state
-function utility.create_highlight(x, y, len)
-	local hl = {}
-	local highlight_namespace = vim.api.nvim_create_namespace("DefaultNvimTrainingHlSpace")
-	hl.highlight_namespace = highlight_namespace
-	vim.api.nvim_set_hl(0, "UnderScore", { underline = true })
 
-	vim.api.nvim_buf_add_highlight(0, highlight_namespace, "UnderScore", x, y, y + len)
-	return hl
-end
 
-function utility.clear_highlight(highlight_obj)
-	vim.api.nvim_buf_clear_namespace(0, highlight_obj.highlight_namespace, 0, -1)
-end
-
-function utility.construct_linked_list(input)
-	local input_list = input
-	if not input then
-		local line_count = vim.api.nvim_buf_line_count(0)
-		input_list = vim.api.nvim_buf_get_lines(0, 0, line_count, false)
-	end
-
-	local node_list = {}
-
-	for i, line_el in pairs(input_list) do
-		local pieces = utility.split_str(line_el, " ")
-		for pi, piece_el in pairs(pieces) do
-			local values = line_el:find(piece_el)
-			local new_node = LinkedListNode:new(piece_el, i, values, values + #piece_el)
-			table.insert(node_list, new_node)
-		end
-	end
-
-	local root_node = node_list[1]
-
-	for i = 1, #node_list do
-		node_list[i].next = node_list[i + 1]
-		node_list[i].previous = node_list[i - 1]
-	end
-
-	return root_node
-end
-
-function utility.deconstruct_linked_list(start_note)
-	local root_node = start_note:root()
-	local lines = {}
-
-	--That should be fine for most purposes
-	while #lines < 75 do
-		table.insert(lines, "")
-	end
-	local current_node = root_node
-	while current_node do
-		lines[current_node.line_index] = lines[current_node.line_index] .. current_node.content .. " "
-		current_node = current_node.next
-	end
-	local result = {}
-	--Modyfing in place failed, this is fine
-	for i, v in pairs(lines) do
-		if not (v == "") then
-			local function all_trim(s)
-				return s:match("^%s*(.-)%s*$")
-			end
-			v = all_trim(v)
-			table.insert(result, v)
-		end
-	end
-	return result
-end
 
 function utility.search_for_char_in_word(input_word, input_char)
 	local offset = -1
