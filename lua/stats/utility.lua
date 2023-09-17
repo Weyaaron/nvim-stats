@@ -2,8 +2,17 @@
 
 local utility = {}
 
+function utility.write_table_to_file(data, file_name)
+	local table_as_strs = {}
+	for i, el in pairs(data) do
+		table.insert(table_as_strs, tostring(el))
+	end
+	local new_line = table.concat(table_as_strs, ",")
 
-
+	local file = io.open(file_name, "a")
+	file:write(new_line .. "\n")
+	file:close()
+end
 
 function utility.search_for_char_in_word(input_word, input_char)
 	local offset = -1

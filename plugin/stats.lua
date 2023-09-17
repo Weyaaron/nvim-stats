@@ -27,11 +27,15 @@ local utility = require("stats.utility")
 local base_config_path = utility.construct_project_base_path("./plugin/default_config.json")
 utility.load_config_file_into_global_namespace(base_config_path)
 
-
 local function setup()
 	local stats = require("stats.main")
 	stats.setup()
-
 end
 
+
+local function analyze()
+	local stats = require("stats.main")
+	stats.analyze()
+end
 vim.api.nvim_create_user_command("StartStatsCollection", setup, {})
+vim.api.nvim_create_user_command("StartStatsAnalysis", analyze, {})

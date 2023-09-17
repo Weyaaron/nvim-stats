@@ -16,7 +16,7 @@ function SessionAnalyzer:setup()
 	local lines = current_file:read()
 	current_file:close()
 	for i, line_el in pairs(lines) do
-		
+		print(tostring(i))
 	end
 end
 
