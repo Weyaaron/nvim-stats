@@ -1,4 +1,7 @@
 -- luacheck: globals vim
+--
+local CursorMovedEventRecorder = require("stats.event_recorders.cursor_movement_recorder")
+local Session = require("stats.session")
 
 if vim.g.loaded_stats == 1 then
 	print("Already loaded")
@@ -6,36 +9,86 @@ if vim.g.loaded_stats == 1 then
 end
 vim.g.loaded_stats = 1
 
-local function construct_base_path()
-	--https://stackoverflow.com/questions/6380820/get-containing-path-of-lua-file
-	local function script_path()
-		local str = debug.getinfo(2, "S").source:sub(2)
-		local initial_result = str:match("(.*/)")
-		return initial_result
+local current_session = Session:new()
+
+local subcommand_tbl = {
+
+	start = {
+		impl = function(args, opts)
+			print("Start called")
+			current_session:start()
+			local start_event = CursorMovedEventRecorder:new({ session = current_session })
+			-- Implementation (args is a list of strings)
+		end,
+		-- This subcommand has no completions
+	},
+
+	update = {
+		impl = function(args, opts)
+			print("Update called")
+
+			-- Implementation (args is a list of strings)
+		end,
+		-- This subcommand has no completions
+	},
+	install = {
+		impl = function(args, opts)
+			print("Install called")
+			-- Implementation
+		end,
+		complete = function(subcmd_arg_lead)
+			-- Simplified example
+			local install_args = {
+				"neorg",
+				"rest.nvim",
+				"rustaceanvim",
+			}
+			return vim.iter(install_args)
+				:filter(function(install_arg)
+					-- If the user has typed `:Rocks install ne`,
+					-- this will match 'neorg'
+					return install_arg:find(subcmd_arg_lead) ~= nil
+				end)
+				:totable()
+		end,
+		-- ...
+	},
+}
+
+local function my_cmd(opts)
+	local fargs = opts.fargs
+	local subcommand_key = fargs[1]
+	-- Get the subcommand's arguments, if any
+	local args = #fargs > 1 and vim.list_slice(fargs, 2, #fargs) or {}
+	local subcommand = subcommand_tbl[subcommand_key]
+	if not subcommand then
+		vim.notify("Rocks: Unknown command: " .. subcommand_key, vim.log.levels.ERROR)
+		return
 	end
-
-	local base_path = script_path() .. "../"
-	return base_path
+	-- Invoke the subcommand
+	subcommand.impl(args, opts)
 end
 
---This is a construct I am not entirely happy with. There
---might be a better way.
-local base_path = construct_base_path()
-vim.api.nvim_command("set runtimepath^=" .. base_path)
-
-local utility = require("stats.utility")
-local base_config_path = utility.construct_project_base_path("./plugin/default_config.json")
-utility.load_config_file_into_global_namespace(base_config_path)
-
-local function setup()
-	local stats = require("stats.main")
-	stats.setup()
-end
-
-
-local function analyze()
-	local stats = require("stats.main")
-	stats.analyze()
-end
-vim.api.nvim_create_user_command("StartStatsCollection", setup, {})
-vim.api.nvim_create_user_command("StartStatsAnalysis", analyze, {})
+vim.api.nvim_create_user_command("Stats", my_cmd, {
+	nargs = "+",
+	desc = "My awesome command with subcommand completions",
+	complete = function(arg_lead, cmdline, _)
+		-- Get the subcommand.
+		local subcmd_key, subcmd_arg_lead = cmdline:match("^Stats *%s(%S+)%s(.*)$")
+		if subcmd_key and subcmd_arg_lead and subcommand_tbl[subcmd_key] and subcommand_tbl[subcmd_key].complete then
+			-- The subcommand has completions. Return them.
+			return subcommand_tbl[subcmd_key].complete(subcmd_arg_lead)
+		end
+		-- Check if cmdline is a subcommand
+		if cmdline:match("^Rocks[!]*%s+%w*$") then
+			-- Filter subcommands that match
+			local subcommand_keys = vim.tbl_keys(subcommand_tbl)
+			return vim.iter(subcommand_keys)
+				:filter(function(key)
+					return key:find(arg_lead) ~= nil
+				end)
+				:totable()
+		end
+	end,
+	bang = true, -- If you want to support ! modifiers
+})

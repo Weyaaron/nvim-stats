@@ -1,5 +1,5 @@
-
 -- luacheck: globals vim
+
 local SessionAnalyzer = require("stats.data_analyzer"):new()
 local utility = require("stats.utility")
 

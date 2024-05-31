@@ -22,14 +22,10 @@ function stats.setup()
 end
 
 function stats.analyze()
-
 	local analyzers = {}
 	local session_analyzer = require("stats.session_analyzer")
 	table.insert(analyzers, session_analyzer)
 	session_analyzer:setup()
-
-
-
 end
 
 return stats
