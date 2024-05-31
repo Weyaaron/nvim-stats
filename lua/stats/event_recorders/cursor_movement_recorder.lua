@@ -21,8 +21,8 @@ function CursorMovedEventRecorder:record(args, session)
 
 	local x_y_pos = vim.api.nvim_win_get_cursor(0)
 
-	args["x"] = x_y_pos[1]
-	args["y"] = x_y_pos[2]
+	args["cursor_x"] = x_y_pos[1]
+	args["cursor_y"] = x_y_pos[2]
 	for i, v in pairs(session:retrieve_data()) do
 		args[i] = v
 	end
@@ -31,6 +31,5 @@ function CursorMovedEventRecorder:record(args, session)
 	file:write(data)
 	file:close()
 end
-
 
 return CursorMovedEventRecorder

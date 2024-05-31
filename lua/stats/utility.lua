@@ -130,4 +130,16 @@ function utility.load_config_file_into_global_namespace(file_path)
 	vim.g.nvim_training = data_from_json
 end
 
+function utility.generate_uuid()
+	--Mostly taken from https://uuidgenerator.dev/uuid-in-lua
+	local function generateUUID()
+		math.randomseed(os.time())
+		local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+		return string.gsub(template, "[xy]", function(c)
+			local v = (c == "x") and math.random(0, 0xf) or math.random(8, 0xb)
+			return string.format("%x", v)
+		end)
+	end
+	return generateUUID()
+end
 return utility
