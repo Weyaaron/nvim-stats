@@ -1,30 +1,35 @@
-# nvim_training
+# nvim_stats
+
+This code aims to implement a neovim plugin for capturing your programming activities,
+with a particular focus on keystrokes.
+The data is then aggretaded to visualize your workflow.
+
+As of 2024-08, this is very much WIP. Juggling working on this with my other life activities
+will be tough. There might be months without activity. The currently provided version
+is the third version of the rough idea outlined above, there might be more reworks needet.
+Development will happen on main until this notice is deleted.
 
 [![License: GPL](https://img.shields.io/badge/License-GPL-brightgreen.svg)](https://opensource.org/license/gpl-3-0/)
 
-# To try it out
 
-# Configuration Options
-To configure this plugin, overwrite the table "vim.g.nvim_training" after loading the plugin. 
-This may be done in the init.lua after loading the plugin.
+# Differences to other 'similar' plugins
+This is no comprehensive list, if you find something provides what this plugin aims for
+please let me know, I appreciate it.
 
-The following options are available (This can be copy-pasted into your init.lua):
-```lua
-local config= {}
+[Pulse](https://github.com/creativecreature/pulse)
+- My plugin wont use a server/online setup
+- Pulse is not about data specific to vim
+- Pulse is not about improvments to your workflow
 
-vim.g.nvim_training = config
-```
 
-Unfortunately, the values can not be set individually,
-see [here](https://neovim.io/doc/user/lua-guide.html#lua-guide-variables)
-and [here](https://github.com/neovim/neovim/issues/12544) for Details.
-
-# Goals 
+# Goals
+- Eventually capture most inputs, including counters, registers etc
+- Provide graphs and summaries for your workflow
+- Suggest improvments that fit your current usage
 
 # Non-Goals
-
-
-# How to get started with contributing
+- Comparisons with the workflow/setup of others
+- Overwhelm you with data that is insignificant
 
 # [License](/LICENSE)
 [GPL](LICENSE)
